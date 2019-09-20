@@ -11,18 +11,10 @@ figure; hold on;
 %               2D plot, using the option 'k+' for the positive
 %               examples and 'ko' for the negative examples.
 %
-
-
-
-
-
-
-
-
+plot(X(y==1,1),X(y==1,2),'b+', 'LineWidth', 2);
+plot(X(y==0,1),X(y==0,2),'ro', 'LineWidth', 2);
 
 % =========================================================================
-
-
 
 hold off;
 
