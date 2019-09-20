@@ -17,10 +17,18 @@ grad = zeros(size(theta));
 %               Compute the partial derivatives and set grad to the partial
 %               derivatives of the cost w.r.t. each parameter in theta
 
+% As linhas de X são no formato [1 x1 x2]
+% Theta é uma coluna com [theta0; theta1; theta2]
 
+nThetas = length(theta);
 
+h_teta_x = sigmoid(X*theta);
+J = 1/m * sum(-y.*log(h_teta_x) - (1-y).*log(1 - h_teta_x) ) ...
+    + lambda/2/m * sum(theta(2:nThetas).^2);
 
-
+for i=1:nThetas
+  grad(i) = 1/m * sum( (h_teta_x - y).*X(:,i) ) + (i ~= 1)*lambda/m * theta(i);
+end
 
 % =============================================================
 
