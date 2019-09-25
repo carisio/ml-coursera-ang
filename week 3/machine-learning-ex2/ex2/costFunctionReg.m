@@ -19,16 +19,28 @@ grad = zeros(size(theta));
 
 % As linhas de X são no formato [1 x1 x2]
 % Theta é uma coluna com [theta0; theta1; theta2]
-
-nThetas = length(theta);
+% Temp são todos os thetas exceto o theta 0 (para regularização)
+% Versão vetorizada:
+temp = theta; temp(1) = 0;
 
 h_teta_x = sigmoid(X*theta);
-J = 1/m * sum(-y.*log(h_teta_x) - (1-y).*log(1 - h_teta_x) ) ...
-    + lambda/2/m * sum(theta(2:nThetas).^2);
 
-for i=1:nThetas
-  grad(i) = 1/m * sum( (h_teta_x - y).*X(:,i) ) + (i ~= 1)*lambda/m * theta(i);
-end
+J = 1/m * sum(-y.*log(h_teta_x) - (1-y).*log(1 - h_teta_x) ) ...
+    + lambda/2/m * sum(temp.^2);
+
+grad = 1/m * ( (h_teta_x - y)' * X) ...
+      + (lambda/m * temp)';
+
+% Versão com o gradiente não vetorizado
+%nThetas = length(theta);
+%
+%h_teta_x = sigmoid(X*theta);
+%J = 1/m * sum(-y.*log(h_teta_x) - (1-y).*log(1 - h_teta_x) ) ...
+%    + lambda/2/m * sum(theta(2:nThetas).^2);
+%
+%for i=1:nThetas
+%  grad(i) = 1/m * sum( (h_teta_x - y).*X(:,i) ) + (i ~= 1)*lambda/m * theta(i);
+%end
 
 % =============================================================
 

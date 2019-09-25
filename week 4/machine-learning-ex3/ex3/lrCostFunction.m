@@ -37,16 +37,16 @@ grad = zeros(size(theta));
 %
 
 
+% As linhas de X são no formato [1 x1 x2]
+% Theta é uma coluna com [theta0; theta1; theta2]
+% Temp são todos os thetas exceto o theta 0 (para regularização)
+temp = theta; temp(1) = 0;
 
+h_teta_x = sigmoid(X*theta);
 
+J = 1/m * sum(-y.*log(h_teta_x) - (1-y).*log(1 - h_teta_x) ) ...
+    + lambda/2/m * sum(temp.^2);
 
-
-
-
-
-
-% =============================================================
-
-grad = grad(:);
-
+grad = 1/m * ( (h_teta_x - y)' * X) ...
+      + (lambda/m * temp)';
 end

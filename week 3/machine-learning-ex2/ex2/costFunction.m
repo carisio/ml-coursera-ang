@@ -26,11 +26,17 @@ grad = zeros(size(theta));
 h_teta_x = sigmoid(X*theta);
 J = 1/m * sum(-y.*log(h_teta_x) - (1-y).*log(1 - h_teta_x) );
 
-nThetas = length(theta);
+%nThetas = length(theta);
 
-for i=1:nThetas
-  grad(i) = 1/m * sum( (h_teta_x - y).*X(:,i) );
-end
+%for i=1:nThetas
+%  grad(i) = 1/m * sum( (h_teta_x - y).*X(:,i) );
+%end
+
+% O código comentado acima pode ser vetorizado para:
+% temp = (h_teta_x - y);
+% grad = 1/m * (temp' * X);
+% Ou, em uma linha:
+grad = 1/m * ( (h_teta_x - y)' * X);
 
 % =============================================================
 
