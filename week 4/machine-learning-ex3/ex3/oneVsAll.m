@@ -49,16 +49,40 @@ X = [ones(m, 1) X];
 %                 initial_theta, options);
 %
 
+%% PRIMEIRA VERSÃO DE TREINAMENTO. RESOLVE USANDO O GRADIENTE
+%% COM LOOP FOR
+%%
+%% O algoritmo abaixo resolve o exercício. 
+%% Com nMaxIter = 1.000, a precisão chega a 93.22%.
+%% Com nMaxIter = 5.000, a precisão chega a 93.66%.
+%% Com nMaxIter = 10.000, chega a 95.32%.
+%%
+%%nMaxIter = 1000;   % Quantidade máxima de iterações
+%%alfa = 1;       % Taxa de aprendizado
+%%
+%%for i = 1:num_labels
+%%  for iter=1:nMaxIter
+%%    [J, grad] = lrCostFunction(all_theta(i,:)', X, y == i, lambda);
+%%    all_theta(i,:) = all_theta(i,:) - alfa*grad;
+%%    if (mod(iter,1000) == 0)
+%%      disp(iter);
+%%    end
+%%  end
+%%end
 
-
-
-
-
-
-
-
-
-
+%% SEGUNDA VERSÃO. TREINAMENTO DO GRADIENTE OTIMIZADO
+%% USANDO A FUNÇÃO fminunc
+%% Com MaxIter = 10, a precisão chega a 85.68%
+%% Com MaxIter = 100, a precisão chega a 94.98%
+%% Com MaxIter = 500, a precisão chega a 96.16%
+%% Com MaxIter = 1.000, a precisão chega a 96.16%
+options = optimset('GradObj', 'on', 'MaxIter', 500);
+for i = 1:num_labels
+  [theta, cost] = ...
+    fminunc(@(t)(lrCostFunction(t, X, y == i, lambda)), all_theta(i,:)', options);
+  all_theta(i,:) = theta;
+  disp(sprintf('Treinando classe %d',i)); 
+end
 
 % =========================================================================
 
