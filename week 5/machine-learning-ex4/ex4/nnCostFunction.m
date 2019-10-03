@@ -62,24 +62,67 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+K=num_labels;
 
+% Faz o loop em todas as amostras do treinamento
+for i=1:m
+  % PROCESSAMENTO DA REDE (FORWARD PROPAGATION):
+  %
+  % CAMADA 1:
+  % A saída da camada 1 é a própria entrada dos dados
+  a_1 = X(i,:);
+  % Aqui a_1 = um vetor linha com (features) colunas. Vamos fazer a
+  % transposta para virar um vetor coluna com (features) linhas:
+  a_1 = a_1';
+  % Nesse ponto, não há o bias. Temos que colocar o bias para processar a 
+  % próxima camada:
+  a_1 = [1; a_1];
+  
+  % CAMADA 2:
+  % A saída da camada 2 é a sigmóide da entrada da camada 1 multiplicada 
+  % por cada peso correspondente.
+  % Os pesos estão na variável Theta1, que organiza os dados da seguinte forma:
+  % LINHA: cada linha corresponde a um nó da camada 2
+  % COLUNA: cada coluna corresponde a um nó da camada 1
+  % Ou seja, Theta1(j, i) liga o nó i da camada 1 ao nó j da camada 2
+  % Assim, ao fazermos a multiplicação Theta1*a_1 teremos o resultado correto.
+  % Por exemplo:
+  % A linha 1 de Theta1 contém os pesos que ligam todos os nós a_1 ao nó 1 da
+  % camada 2. A multiplicação Theta1*a_1 irá gerar um vetor coluna z_2. 
+  % O elemento 1 desse vetor será theta1(1, 1)*a_1(1) + ... 
+  %                                                   + theta1(401, 1)*a_1(401)
+  z_2 = Theta1*a_1;
+  % A saída da camada é a sigmóide de z_2:
+  a_2 = sigmoid(z_2);
+  % Aqui a saída ainda não contém o bias. Devemos inserí-lo para servir de
+  % entrada para a próxima camada
+  a_2 = [1; a_2];
+  
+  % CAMADA 3:
+  % O processamento da camada 3 é similar ao da camada 2. A principal diferença
+  % é que, como já é a saída, não inserimos o bias:
+  z_3 = Theta2*a_2;
+  a_3 = sigmoid(z_3);
+  
+  % CÁLCULO DO CUSTO
+  % Feito o processamento das camadas, calculamos o custo.
+  %
+  % Primeiro, definimos uma variável para guardar y_i. É um vetor coluna de
+  % tamanho K. O vetor é totalmente 0, exceto no nó correto, que deve ser 1.
+  y_i = [1:K]' == y(i);
+  % A conta correta é fazendo um loop da seguinte forma
+  %for k=1:K
+  %  J = J + 1/m*(-y_i(k) * log(a_3(k)) +...
+  %          -(1-y_i(k))*log(1 - a_3(k)));
+  %end
+  % Versão sem loop
+  J = J - (1/m)*( y_i' * log(a_3) + (1-y_i)' * log(1 - a_3) );
+end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+% Aplica regularização
+sum_teta1_square = sum(sum(Theta1(:,2:end).^2));
+sum_teta2_square = sum(sum(Theta2(:,2:end).^2));
+J = J + (lambda/2/m)*(sum_teta1_square + sum_teta2_square);
 % -------------------------------------------------------------
 
 % =========================================================================
