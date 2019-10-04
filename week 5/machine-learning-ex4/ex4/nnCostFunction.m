@@ -117,12 +117,50 @@ for i=1:m
   %end
   % Versão sem loop
   J = J - (1/m)*( y_i' * log(a_3) + (1-y_i)' * log(1 - a_3) );
+  
+  % CÁLCULO DO BACKPROPAGATION
+  %
+  % CÁLCULO DE delta_3
+  % delta_3 é o erro gerado pelos nós da camada 3 (saída de rede). Como essa é
+  % a última camada, o erro é simplesmente a diferença entre a saída da rede
+  % e a saída desejada.
+  delta_3 = a_3 - y_i;
+  
+  % CÁLCULO DE delta_2
+  % delta_2 é o erro gerado pelos nós da camada 2 (camada intermediária). Nesse
+  % caso, o erro da camada 3 propaga de volta para a camada 2.
+  % NOTA: A intuição abaixo desconsidera a multiplicação pela derivada.
+  % Por exemplo, delta_2(1) = Theta2(1,2)*delta_3(1) + Theta2(2,2)*delta_3(2) +
+  %                           + .... + Theta2(K,2)*delta_3(K)
+  %
+  % Observe que não considera o termo de bias!
+  %
+  % No nosso caso, Theta2 é organizado em K linhas e n_nos_intermediarios
+  % colunas. Para fazer essa conta com operação de matrizes, precisamos usar
+  % a transposta de Theta2. Assim, Theta2 ficará organizado em 
+  % n_nos_intermediarios linhas e K colunas. A operação 
+  % transponse(Theta2)*delta_3 vai gerar o vetor delta_2 desejado
+  % Depois disso, basta multiplicar cada termo pela derivada do gradiente
+  delta_2 = (Theta2(:,2:end)' * delta_3).*sigmoidGradient(z_2);
+    
+  % A partir daí, computamos o DELTA para calcular o gradiente de cada Theta:
+  % DELTA(camada L) = DELTA(camad L) + delta(camada L+1)*transposta(a(camada L))
+  Theta1_grad = Theta1_grad + delta_2*(a_1');
+  Theta2_grad = Theta2_grad + delta_3*(a_2');
 end
+
+% O cálculo do gradiente é o delta dividido por m
+Theta1_grad = Theta1_grad/m;
+Theta2_grad = Theta2_grad/m;
 
 % Aplica regularização
 sum_teta1_square = sum(sum(Theta1(:,2:end).^2));
 sum_teta2_square = sum(sum(Theta2(:,2:end).^2));
 J = J + (lambda/2/m)*(sum_teta1_square + sum_teta2_square);
+
+Theta1_grad(:,2:end) = Theta1_grad(:,2:end) + (lambda/m)*Theta1(:,2:end);
+Theta2_grad(:,2:end) = Theta2_grad(:,2:end) + (lambda/m)*Theta2(:,2:end);
+
 % -------------------------------------------------------------
 
 % =========================================================================
