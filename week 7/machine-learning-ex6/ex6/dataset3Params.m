@@ -23,11 +23,31 @@ sigma = 0.3;
 %        mean(double(predictions ~= yval))
 %
 
+C = [0.01 0.03 0.1 0.3 1 3 10 30];
+sigma = [0.01 0.03 0.1 0.3 1 3 10 30];
 
+% Faz a combinação de todos os C/sigma. A coluna 1 vai ser referente ao C
+% e a coluna 2, ao sigma.
+% Código para fazer essa combinação:
+% https://stackoverflow.com/questions/7446946/how-to-generate-all-pairs-from-two-vectors-in-matlab-using-vectorised-code
+[p,q] = meshgrid(C, sigma);
+pairs = [p(:) q(:)];
+% Agora eu vou colocar uma terceira coluna pra manter o erro de predição
+nCombinacoes = length(C)*length(sigma);
+pairs = [pairs zeros(nCombinacoes,1)];
 
+for i=1:nCombinacoes
+  cTrain = pairs(i,1);
+  sigmaTrain = pairs(i,2);
+  model = svmTrain(X, y, cTrain, @(x1, x2) gaussianKernel(x1, x2, sigmaTrain));
+  yPredict = svmPredict(model, Xval);
+  pairs(i, 3) = mean(double(yPredict ~= yval));
+end
 
-
-
+% Treinado e validado todo mundo, agora acha o valor mais adequado de C e sigma
+[erro idxMenorErro] = min(pairs(:,3));
+C = pairs(idxMenorErro, 1);
+sigma = pairs(idxMenorErro, 2);
 
 % =========================================================================
 
