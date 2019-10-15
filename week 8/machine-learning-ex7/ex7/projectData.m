@@ -18,8 +18,14 @@ Z = zeros(size(X, 1), K);
 %                    projection_k = x' * U(:, k);
 %
 
-
-
+% Nos vídeos, X é um vetor de tamanho (n,1) e U_reduzido tem tamanho (k, n).
+% Z é transposta(U) * X.
+%
+% Nesse caso, X possui também as amostras e está organizada como (m, n).
+% U_reduzido está organizado como (k,n).
+% A conta aqui é ligeiramente diferente, com Z tendo tamanho (1, k)
+Z = U(:,1:K)' * X';
+Z = Z';
 
 % =============================================================
 
