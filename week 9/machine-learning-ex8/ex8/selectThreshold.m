@@ -23,7 +23,20 @@ for epsilon = min(pval):stepsize:max(pval)
     % Note: You can use predictions = (pval < epsilon) to get a binary vector
     %       of 0's and 1's of the outlier predictions
 
-
+    % Calcula as anomalias estimadas para esse epsilon:
+    predAnomalies = pval < epsilon;
+    % Calcula a quantidade de verdadeiros positivos (tp), falsos positivos (fp),
+    % verdadeiros negativos (tn) e falsos negativos (fn):
+    tp = sum(predAnomalies(yval==1));
+    fp = sum(1 - predAnomalies(yval==1));
+    
+    tn = sum(1 - predAnomalies(yval==0));
+    fn = sum(predAnomalies(yval==0));
+    % Calcula a precisão e o recall:
+    prec = tp/(tp+fp);
+    rec = tp/(tp+fn);
+    % Calcula o F1 score
+    F1 = 2*prec*rec/(prec+rec);
     % =============================================================
 
     if F1 > bestF1
